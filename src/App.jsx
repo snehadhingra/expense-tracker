@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { BrowserRouter, Routes, Route, NavLink } from "react-router-dom";
 import { ExpenseProvider } from "./context/ExpenseContext";
 import { styles } from "./styles/styles";
 import Dashboard from "./pages/Dashboard";
@@ -6,27 +6,7 @@ import AddExpense from "./pages/AddExpense";
 import History from "./pages/History";
 import Summary from "./pages/Summary";
 
-const PAGES = ["dashboard", "add", "history", "summary"];
-const PAGE_LABELS = {
-  dashboard: "Dashboard",
-  add: "Add Expense",
-  history: "History",
-  summary: "Summary",
-};
-
 function AppContent() {
-  const [page, setPage] = useState("dashboard");
-
-  const renderPage = () => {
-    switch (page) {
-      case "dashboard": return <Dashboard onNavigate={setPage} />;
-      case "add":       return <AddExpense />;
-      case "history":   return <History />;
-      case "summary":   return <Summary />;
-      default:          return <Dashboard onNavigate={setPage} />;
-    }
-  };
-
   return (
     <div style={styles.app}>
       <style>{`
@@ -36,6 +16,7 @@ function AppContent() {
         input[type=date]::-webkit-calendar-picker-indicator { filter: invert(0.6); }
         @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         button:hover { opacity: 0.85; }
+        a { text-decoration: none; }
       `}</style>
 
       <header style={styles.header}>
@@ -44,15 +25,29 @@ function AppContent() {
           ExpenseTrack
         </div>
         <nav style={styles.nav}>
-          {PAGES.map((p) => (
-            <button key={p} style={styles.navBtn(page === p)} onClick={() => setPage(p)}>
-              {PAGE_LABELS[p]}
-            </button>
+          {[
+            { to: "/",        label: "Dashboard"   },
+            { to: "/add",     label: "Add Expense" },
+            { to: "/history", label: "History"     },
+            { to: "/summary", label: "Summary"     },
+          ].map(({ to, label }) => (
+            <NavLink key={to} to={to} end>
+              {({ isActive }) => (
+                <button style={styles.navBtn(isActive)}>{label}</button>
+              )}
+            </NavLink>
           ))}
         </nav>
       </header>
 
-      <main style={styles.main}>{renderPage()}</main>
+      <main style={styles.main}>
+        <Routes>
+          <Route path="/"        element={<Dashboard />} />
+          <Route path="/add"     element={<AddExpense />} />
+          <Route path="/history" element={<History />} />
+          <Route path="/summary" element={<Summary />} />
+        </Routes>
+      </main>
     </div>
   );
 }
@@ -60,7 +55,9 @@ function AppContent() {
 export default function App() {
   return (
     <ExpenseProvider>
-      <AppContent />
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
     </ExpenseProvider>
   );
 }

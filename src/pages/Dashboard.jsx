@@ -39,11 +39,11 @@ export default function Dashboard({ onNavigate }) {
           )}
           {expenses.length > 5 && (
             <button
-              style={{ ...styles.filterChip(false), marginTop: "1rem", width: "100%", textAlign: "center" }}
-              onClick={() => onNavigate("history")}
-            >
-              View all {expenses.length} expenses →
-            </button>
+            style={{ ...styles.filterChip(false), marginTop: "1rem", width: "100%", textAlign: "center" }}
+            onClick={() => navigate("/history")}           // ← was onNavigate("history")
+          >
+            View all {expenses.length} expenses →
+          </button>
           )}
         </div>
 
